@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exam Ledger — Accounting Cram Schedule</title>
+<style>
+  @font-face{
+    font-family:'Departure Mono';
+    src:url('DepartureMono-Regular.woff2') format('woff2');
+    font-display:swap;
+    font-weight:400 700;
+  }
+  :root{
+    --ink:#101822;
+    --panel:#16212c;
+    --panel-2:#1b2733;
+    --rule:#293947;
+    --paper:#ede8dc;
+    --muted:#8b99a6;
+    --sage:#7fa36b;
+    --brick:#c1554d;
+    --ochre:#c9922a;
+    --teal:#5b8a87;
+    --slate:#6b84a3;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%; background:#0d1114;}
+  body{
+    margin:0;
+    background:#0d1114;
+    color:var(--paper);
+    font-family:'Departure Mono', monospace;
+    line-height:1.45;
+    -webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:"";
+    position:fixed;
+    inset:-20%;
+    z-index:0;
+    pointer-events:none;
+    opacity:.42;
+    background:
+      radial-gradient(ellipse at 16% 18%, rgba(201,146,42,.7) 0, transparent 7%),
+      radial-gradient(ellipse at 78% 28%, rgba(91,138,135,.6) 0, transparent 8%),
+      radial-gradient(ellipse at 52% 76%, rgba(193,85,77,.5) 0, transparent 7%),
+      radial-gradient(ellipse at 88% 82%, rgba(201,146,42,.55) 0, transparent 6%);
+    filter:blur(18px);
+    animation:fluid-drift 18s ease-in-out infinite alternate;
+  }
+  @keyframes fluid-drift{
+    0%{ transform:translate3d(-2%, -1%, 0) scale(1); }
+    100%{ transform:translate3d(2%, 1%, 0) scale(1.08); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    body::before{ animation:none; }
+  }
+  .wrap{position:relative;z-index:1;max-width:700px;margin:0 auto;padding:1.5rem 1.1rem 4rem;}
+
+  /* ---------- Hero / ledger head ---------- */
+  .ledger-head{
+    border:1px solid var(--rule);
+    border-radius:12px;
+    background:linear-gradient(180deg, var(--panel-2), var(--panel));
+    padding:1.5rem 1.4rem 1.3rem;
+    position:relative;
+    overflow:hidden;
+  }
+  .ledger-head::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image: repeating-linear-gradient(180deg, rgba(237,232,220,0.025) 0px, rgba(237,232,220,0.025) 1px, transparent 1px, transparent 28px);
+    pointer-events:none;
+  }
+  .kicker{
+    font-size:0.72rem;
+    color:var(--muted);
+    letter-spacing:0.03em;
+    margin:0 0 .3rem;
+  }
+  .exam-title{
+    font-family:'Departure Mono', monospace;
+    font-weight:600;
+    font-size:1.35rem;
+    margin:0 0 1.1rem;
+    color:var(--paper);
+  }
+  .countdown-row{
+    display:flex; align-items:baseline; gap:.6rem; flex-wrap:wrap;
+  }
+  .countdown{
+    font-family:'Departure Mono', monospace;
+    font-variant-numeric: tabular-nums;
+    font-size:clamp(2.1rem, 9vw, 2.9rem);
+    font-weight:600;
+    letter-spacing:0.01em;
+    color:var(--paper);
+  }
+  .countdown-label{
+    font-size:0.82rem;
+    color:var(--muted);
+  }
+  .countdown.urgent{ color:var(--brick); }
+
+  .timer-panel{ margin-top:1.1rem; border:1px solid var(--rule); border-radius:10px; background:var(--panel); padding:1rem 1.1rem; }
+  .timer-top{ display:flex; justify-content:space-between; gap:1rem; align-items:flex-start; }
+  .timer-label{ font-size:.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin:0 0 .25rem; }
+  .timer-block{ font-family:'Departure Mono',monospace; font-weight:600; font-size:1rem; margin:0; }
+  .timer-phase{ color:var(--ochre); font-size:.78rem; text-align:right; }
+  .timer-clock{ font-family:'Departure Mono',monospace; font-variant-numeric:tabular-nums; font-size:clamp(2.6rem,12vw,4rem); line-height:1; text-align:center; margin:1rem 0 .8rem; }
+  .timer-clock.break{ color:var(--sage); }
+  .timer-track{ height:5px; background:var(--rule); border-radius:3px; overflow:hidden; }
+  .timer-fill{ height:100%; width:0; background:var(--ochre); transition:width .25s linear; }
+  .timer-fill.break{ background:var(--sage); }
+  .timer-actions{ display:flex; justify-content:center; gap:.5rem; margin-top:.9rem; }
+  .timer-actions .btn{ min-width:76px; }
+  .timer-settings{ display:flex; justify-content:center; gap:.8rem; margin-top:.8rem; color:var(--muted); font-size:.72rem; }
+  .timer-settings label{ display:flex; gap:.35rem; align-items:center; cursor:pointer; }
+  .timer-settings input{ accent-color:var(--ochre); }
+
+  .progress-block{margin-top:1.15rem;}
+  .progress-labels{
+    display:flex; justify-content:space-between;
+    font-size:0.75rem; color:var(--muted); margin-bottom:.35rem;
+  }
+  .progress-track{
+    height:7px; border-radius:4px; background:var(--rule); overflow:hidden;
+  }
+  .progress-fill{
+    height:100%; border-radius:4px; background:var(--sage);
+    width:0%; transition:width .5s ease;
+  }
+
+  .head-actions{
+    display:flex; gap:.6rem; margin-top:1.1rem; flex-wrap:wrap;
+  }
+  .btn{
+    font-family:'Departure Mono', monospace;
+    font-size:0.78rem;
+    color:var(--paper);
+    background:transparent;
+    border:1px solid var(--rule);
+    border-radius:7px;
+    padding:.5rem .85rem;
+    cursor:pointer;
+    transition:background .15s ease, border-color .15s ease;
+  }
+  .btn:hover{ background:rgba(237,232,220,0.05); border-color:#3a4c5c; }
+  .btn:focus-visible{ outline:2px solid var(--paper); outline-offset:2px; }
+  .btn-quiet{ color:var(--muted); }
+
+  .timeline-tools{
+    display:flex; align-items:center; gap:.55rem; flex-wrap:wrap;
+    margin-top:1.35rem;
+  }
+  .search-box{
+    flex:1 1 190px; min-width:150px;
+    font:inherit; font-size:.78rem; color:var(--paper);
+    background:var(--panel); border:1px solid var(--rule); border-radius:7px;
+    padding:.52rem .7rem;
+  }
+  .search-box::placeholder{ color:var(--muted); }
+  .search-box:focus{ outline:2px solid var(--paper); outline-offset:2px; }
+  .filter-group{ display:flex; gap:.2rem; }
+  .filter-btn{ padding:.45rem .65rem; color:var(--muted); }
+  .filter-btn.selected{ color:var(--paper); background:rgba(237,232,220,0.09); border-color:#506273; }
+  .empty-state{ color:var(--muted); font-size:.85rem; padding:1.2rem .3rem; border-bottom:1px solid var(--rule); }
+
+  /* ---------- Now card ---------- */
+  .now-card{
+    margin-top:1.1rem;
+    border:1px solid var(--rule);
+    border-left:3px solid var(--paper);
+    border-radius:10px;
+    background:var(--panel);
+    padding:1rem 1.1rem;
+  }
+  .now-card .eyebrow{
+    font-size:0.7rem; color:var(--muted); margin:0 0 .35rem;
+    display:flex; align-items:center; gap:.4rem;
+  }
+  .dot{
+    width:7px;height:7px;border-radius:50%;background:var(--sage);
+    display:inline-block; flex:none;
+    animation:pulse 2.2s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{ opacity:1; } 50%{ opacity:.35; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .dot{ animation:none; }
+  }
+  .now-card .now-title{
+    font-family:'Departure Mono', monospace; font-weight:600; font-size:1.05rem; margin:0 0 .25rem;
+  }
+  .now-card .now-meta{ font-size:0.82rem; color:var(--muted); }
+  .now-card .now-bar{ margin-top:.6rem; }
+
+  /* ---------- Section labels ---------- */
+  .section-label{
+    font-family:'Departure Mono', monospace;
+    font-weight:600;
+    font-size:0.95rem;
+    color:var(--muted);
+    margin:2.1rem 0 .2rem;
+    padding-bottom:.4rem;
+    border-bottom:1px solid var(--rule);
+  }
+
+  /* ---------- Timeline entries ---------- */
+  .entry{
+    display:grid;
+    grid-template-columns: 88px 1fr auto;
+    gap:.7rem;
+    align-items:center;
+    padding:.9rem .3rem;
+    border-bottom:1px solid var(--rule);
+    cursor:pointer;
+  }
+  .entry:hover{ background:rgba(237,232,220,0.02); }
+  .entry.active-now{
+    background:rgba(237,232,220,0.045);
+    border-left:2px solid var(--paper);
+    padding-left:calc(.3rem - 2px);
+  }
+  .entry .time{
+    font-family:'Departure Mono', monospace;
+    font-size:0.72rem;
+    color:var(--muted);
+    text-align:right;
+    line-height:1.35;
+    white-space:nowrap;
+  }
+  .entry .body .title-row{
+    display:flex; align-items:center; gap:.5rem; flex-wrap:wrap;
+  }
+  .entry .body .title{
+    font-family:'Departure Mono', monospace;
+    font-weight:600;
+    font-size:0.98rem;
+  }
+  .entry.done .title{ color:var(--muted); text-decoration: line-through; text-decoration-color: var(--rule); }
+  .pill{
+    font-size:0.65rem;
+    padding:.16rem .5rem;
+    border-radius:20px;
+    white-space:nowrap;
+    border:1px solid transparent;
+  }
+  .pill-ch20{ background:rgba(193,85,77,0.16); color:#e08d86; }
+  .pill-ch22{ background:rgba(201,146,42,0.18); color:#e0b467; }
+  .pill-ch5{ background:rgba(91,138,135,0.2); color:#8fc2be; }
+  .pill-ch6{ background:rgba(107,132,163,0.2); color:#9db3d6; }
+  .pill-review{ border-color:var(--rule); color:var(--muted); }
+  .pill-flag{ border:1px solid rgba(193,85,77,0.5); color:#e08d86; }
+  .entry .meta{ font-size:0.75rem; color:var(--muted); margin-top:.2rem; }
+  .entry .count{
+    font-family:'Departure Mono', monospace;
+    font-size:0.75rem; color:var(--muted); text-align:right; white-space:nowrap;
+  }
+  .chev{
+    display:inline-block; margin-left:.3rem; color:var(--muted);
+    transition:transform .18s ease; transform:rotate(0deg);
+  }
+  .entry.open .chev{ transform:rotate(90deg); }
+
+  .tasks{
+    grid-column: 1 / -1;
+    max-height:0; overflow:hidden;
+    transition:max-height .32s ease;
+    padding-left:0.3rem;
+  }
+  .tasks.open{ max-height:900px; }
+  .tasks-inner{ padding:.2rem 0 .6rem 0; }
+  .task-row{
+    display:flex; align-items:flex-start; gap:.6rem;
+    padding:.42rem 0; cursor:pointer;
+  }
+  .task-row input[type="checkbox"]{
+    appearance:none; -webkit-appearance:none;
+    width:17px; height:17px; flex:none; margin-top:.15rem;
+    border:1.5px solid var(--rule); border-radius:4px;
+    background:transparent; cursor:pointer;
+    display:grid; place-content:center;
+  }
+  .task-row input[type="checkbox"]::before{
+    content:""; width:9px; height:9px; border-radius:2px;
+    background:var(--sage); transform:scale(0); transition:transform .12s ease;
+  }
+  .task-row input[type="checkbox"]:checked::before{ transform:scale(1); }
+  .task-row input[type="checkbox"]:focus-visible{ outline:2px solid var(--paper); outline-offset:2px; }
+  .task-row span{ font-size:0.88rem; }
+  .task-row.checked span{ color:var(--muted); text-decoration:line-through; text-decoration-color:var(--rule); }
+
+  /* Non-task note rows */
+  .note-row{
+    display:grid;
+    grid-template-columns: 88px 1fr;
+    gap:.7rem;
+    padding:.75rem .3rem;
+    border-bottom:1px solid var(--rule);
+  }
+  .note-row .time{
+    font-family:'Departure Mono', monospace;
+    font-size:0.72rem; color:var(--muted); text-align:right; line-height:1.35; white-space:nowrap;
+  }
+  .note-row .note-title{ font-size:0.9rem; font-weight:500; color:var(--paper); }
+  .note-row .note-text{ font-size:0.78rem; color:var(--muted); margin-top:.15rem; }
+  .note-row.active-now{ background:rgba(237,232,220,0.045); border-left:2px solid var(--paper); padding-left:calc(.3rem - 2px); }
+
+  /* ---------- Footer memo ---------- */
+  .memo{
+    margin-top:2.3rem;
+    border:1px dashed var(--rule);
+    border-radius:10px;
+    padding:1.1rem 1.2rem;
+    font-size:0.82rem;
+    color:var(--muted);
+  }
+  .memo strong{ color:var(--paper); font-weight:600; }
+  .memo p{ margin:.4rem 0; }
+
+  ::selection{ background:rgba(237,232,220,0.2); }
+
+  @media (max-width:480px){
+    .entry, .note-row{ grid-template-columns: 68px 1fr auto; }
+    .note-row{ grid-template-columns: 68px 1fr; }
+    .countdown{ font-size:2.2rem; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="ledger-head">
+    <p class="kicker">Accounting Principles, 12e — Weygandt · Chapters 5, 6, 20, 22</p>
+    <h1 class="exam-title">Exam Ledger</h1>
+    <div class="countdown-row">
+      <span class="countdown" id="countdown">—</span>
+      <span class="countdown-label">until exam · Fri 2:30 PM</span>
+    </div>
+    <div class="timer-panel" id="timer-panel">
+      <div class="timer-top">
+        <div><p class="timer-label">Pomodoro focus</p><p class="timer-block" id="timer-block">Loading block...</p></div>
+        <span class="timer-phase" id="timer-phase">Ready</span>
+      </div>
+      <div class="timer-clock" id="timer-clock">25:00</div>
+      <div class="timer-track"><div class="timer-fill" id="timer-fill"></div></div>
+      <div class="timer-actions">
+        <button class="btn" id="timer-start" type="button">Start</button>
+        <button class="btn" id="timer-reset" type="button">Reset</button>
+        <button class="btn btn-quiet" id="timer-skip" type="button">Skip</button>
+      </div>
+      <div class="timer-settings">
+        <label><input id="timer-auto" type="checkbox" checked> Auto-start next phase</label>
+        <span id="timer-cycle">Cycle 1</span>
+      </div>
+    </div>
+    <div class="progress-block">
+      <div class="progress-labels">
+        <span>Reconciled</span>
+        <span id="progress-text">0 / 0 tasks</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+    <div class="head-actions">
+      <button class="btn" id="jump-btn">Jump to now</button>
+      <button class="btn btn-quiet" id="reset-btn">Reset progress</button>
+    </div>
+  </div>
+
+  <div class="now-card" id="now-card">
+    <p class="eyebrow"><span class="dot"></span><span id="now-eyebrow">Loading…</span></p>
+    <p class="now-title" id="now-title">—</p>
+    <p class="now-meta" id="now-meta">—</p>
+    <div class="now-bar">
+      <div class="progress-track"><div class="progress-fill" id="now-fill" style="background:var(--paper)"></div></div>
+    </div>
+  </div>
+
+  <div class="timeline-tools" aria-label="Schedule controls">
+    <input class="search-box" id="search-box" type="search" placeholder="Find a topic or task..." aria-label="Find a topic or task">
+    <div class="filter-group" role="group" aria-label="Filter schedule">
+      <button class="btn filter-btn selected" data-filter="all" type="button">All</button>
+      <button class="btn filter-btn" data-filter="study" type="button">Study</button>
+      <button class="btn filter-btn" data-filter="note" type="button">Breaks</button>
+    </div>
+    <button class="btn btn-quiet" id="expand-btn" type="button">Expand all</button>
+  </div>
+
+  <div id="timeline"></div>
+
+  <div class="memo">
+    <p><strong>Before you close the book tonight:</strong></p>
+    <p>Sleep 1:30–7:30 is not optional — memory consolidates while you're out, and cutting it costs you more than the extra hour of review would gain.</p>
+    <p>Eat protein at breakfast and lunch, not just carbs. A sugar crash at 1:45 PM is the last thing you want.</p>
+    <p>Tomorrow's drills are done from memory, unaided, before you check anything. That's what actually tells you what's solid.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  // ---------- Anchors ----------
+  const START = new Date(2026, 8, 3, 14, 0, 0);   // Thu Sep 3 2026, 2:00 PM
+  const EXAM  = new Date(2026, 8, 4, 14, 30, 0);  // Fri Sep 4 2026, 2:30 PM
+
+  // ---------- Schedule data ----------
+  // type: 'study' | 'note'   (note = break/meal/sleep/buffer, no checklist)
+  const raw = [
+    { id:'ch20', type:'study', mins:240, title:'Ch. 20 — Job Order Costing',
+      pill:'pill-ch20', pillLabel:'Ch. 20', flag:true,
+      tasks:[
+        'Do It! 1 — Ringling Co.','Do It! 2 — Danielle Co.','Do It! 3 — Stanley Co.',
+        'Do It! 4 — Onyx Corp.','Do It! 5 — Karr Co.','Practice Exercise 1','Practice Exercise 2',
+        'Practice Problem — Cardella Company','E20-3','E20-6','E20-8','E20-10','E20-13'
+      ]},
+    { id:'dinner', type:'note', mins:30, title:'Dinner', note:'Eat away from your notes. Real food, not just carbs.' },
+    { id:'ch22', type:'study', mins:210, title:'Ch. 22 — Cost-Volume-Profit',
+      pill:'pill-ch22', pillLabel:'Ch. 22', flag:true,
+      tasks:[
+        'Do It! 1','Do It! 2','Do It! 3','Do It! 4','Do It! 5','Do It! 6',
+        'Practice Exercise 1','Practice Exercise 2','Practice Problem — Mabo Company',
+        'E22-1','E22-2','E22-3','E22-8','E22-10','Problem 1A','Problem 2A','Problem 3A'
+      ]},
+    { id:'break1', type:'note', mins:15, title:'Break', note:'Stand up, stretch, look away from the screen.' },
+    { id:'ch5', type:'study', mins:120, title:'Ch. 5 — Merchandising Operations',
+      pill:'pill-ch5', pillLabel:'Ch. 5',
+      tasks:[
+        'Do It! 1','Do It! 2','Do It! 3','Do It! 4','Practice Exercise 1','Practice Exercise 2',
+        'Practice Problem — Falcetto Company','E5-1','E5-2','E5-4','E5-18','E5-19'
+      ]},
+    { id:'break2', type:'note', mins:15, title:'Break', note:'Quick reset before inventory.' },
+    { id:'ch6', type:'study', mins:60, title:'Ch. 6 — Inventories',
+      pill:'pill-ch6', pillLabel:'Ch. 6',
+      tasks:[
+        'Do It! 1','Do It! 2','Practice Exercise 1','Practice Exercise 2',
+        'Practice Problem 1','Practice Problem 2','E6-1','E6-2','E6-3','E6-4','E6-5','E6-17','E6-20',
+        'P6-1A','P6-2A','P6-3A','P6-4A','P6-6A'
+      ]},
+    { id:'sleep', type:'note', mins:360, title:'Sleep', note:'6 hours, non-negotiable. This is when today\u2019s material actually consolidates.' },
+    { id:'wake', type:'note', mins:30, title:'Wake + breakfast', note:'Don\u2019t touch notes yet. Let your brain finish waking up.' },
+    { id:'drill1', type:'study', mins:90, title:'Blind redo — Cardella & Mabo',
+      pill:'pill-review', pillLabel:'Ch. 20 · Ch. 22',
+      tasks:[
+        'Redo Cardella Company (Ch. 20) unaided',
+        'Redo Mabo Company (Ch. 22) unaided',
+        'Log every mistake for the reconcile block'
+      ]},
+    { id:'break3', type:'note', mins:15, title:'Break', note:'Short walk if you can.' },
+    { id:'drill2', type:'study', mins:90, title:'Blind redo — Falcetto & Ch. 6 problems',
+      pill:'pill-review', pillLabel:'Ch. 5 · Ch. 6',
+      tasks:[
+        'Redo Falcetto Company (Ch. 5) unaided',
+        'Redo Ch. 6 Practice Problem 1 unaided',
+        'Redo Ch. 6 Practice Problem 2 unaided'
+      ]},
+    { id:'break4', type:'note', mins:15, title:'Break', note:'Almost there.' },
+    { id:'fix', type:'study', mins:60, title:'Reconcile mistakes',
+      pill:'pill-review', pillLabel:'All chapters',
+      tasks:[
+        'Rework every missed step from the Cardella/Mabo redo',
+        'Rework every missed step from the Falcetto/Ch.6 redo',
+        'Redrill any exercise you got wrong today'
+      ]},
+    { id:'lunch', type:'note', mins:30, title:'Lunch', note:'Protein, not sugar. You need steady energy, not a 2 PM crash.' },
+    { id:'final', type:'study', mins:60, title:'Final pass — all four chapters',
+      pill:'pill-review', pillLabel:'Ch. 5 · 6 · 20 · 22',
+      tasks:[
+        'Skim Ch. 5 Do It boxes',
+        'Skim Ch. 6 Do It boxes',
+        'Skim Ch. 20 Do It boxes',
+        'Skim Ch. 22 Do It boxes',
+        'Review formulas: FIFO/LIFO/avg cost \u00b7 POHR & applied OH \u00b7 CM, CM ratio & break-even'
+      ]},
+    { id:'buffer', type:'note', mins:30, title:'Buffer / travel', note:'No new material. Get to the exam room and breathe.' },
+  ];
+
+  // ---------- Build absolute start/end + ids ----------
+  let cursor = new Date(START);
+  const scheduleOrder = ['ch5','break2','ch6','dinner','ch20','break1','ch22','sleep','wake','drill1','break3','drill2','break4','fix','lunch','final','buffer'];
+  const items = scheduleOrder.map(id => raw.find(b => b.id === id)).map(b => {
+    const start = new Date(cursor);
+    const end = new Date(cursor.getTime() + b.mins*60000);
+    cursor = end;
+    const tasks = (b.tasks||[]).map((label, i) => ({ id: b.id+'-'+i, label, checked:false }));
+    return Object.assign({}, b, { start, end, tasks });
+  });
+
+  const TOTAL_TASKS = items.reduce((n,i)=> n + i.tasks.length, 0);
+
+  // ---------- Storage ----------
+  let progress = {};
+  let storageAvailable = true;
+  async function loadProgress(){
+    try{
+      if(window.storage){
+        const res = await window.storage.get('progress');
+        if(res && res.value){ progress = JSON.parse(res.value); }
+      } else {
+        const saved = window.localStorage.getItem('exam-ledger-progress');
+        if(saved){ progress = JSON.parse(saved); }
+      }
+    }catch(e){ progress = {}; storageAvailable = false; }
+    items.forEach(it => it.tasks.forEach(t => { t.checked = !!progress[t.id]; }));
+  }
+  async function saveProgress(){
+    try{
+      if(window.storage) await window.storage.set('progress', JSON.stringify(progress));
+      else window.localStorage.setItem('exam-ledger-progress', JSON.stringify(progress));
+    }catch(e){ storageAvailable = false; }
+  }
+
+  // ---------- Formatting ----------
+  function fmtTime(d){
+    let h = d.getHours(), m = d.getMinutes();
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12; if(h===0) h = 12;
+    return h + ':' + String(m).padStart(2,'0') + ' ' + ampm;
+  }
+  function fmtDur(ms){
+    const totalSec = Math.max(0, Math.floor(ms/1000));
+    const h = Math.floor(totalSec/3600);
+    const m = Math.floor((totalSec%3600)/60);
+    const s = totalSec%60;
+    if(h>0) return h+'h '+String(m).padStart(2,'0')+'m';
+    return m+'m '+String(s).padStart(2,'0')+'s';
+  }
+
+  // ---------- Render timeline ----------
+  const timelineEl = document.getElementById('timeline');
+  let currentSectionDay = null;
+  let activeFilter = 'all';
+  let searchQuery = '';
+  let allExpanded = false;
+  let timer = { running:false, phase:'focus', seconds:1500, cycle:1, interval:null, auto:true };
+  const timerDurations = { focus:1500, break:300 };
+  let selectedTimerItem = null;
+
+  function matchesFilter(item){
+    if(activeFilter !== 'all' && item.type !== activeFilter) return false;
+    if(!searchQuery) return true;
+    const haystack = [item.title, item.note || '', ...(item.tasks || []).map(t => t.label)].join(' ').toLowerCase();
+    return haystack.includes(searchQuery);
+  }
+
+  function sectionLabelFor(d){
+    return d.getDate() === START.getDate() ? 'Today' : 'Tomorrow';
+  }
+
+  function taskCount(item){
+    const done = item.tasks.filter(t=>t.checked).length;
+    return { done, total: item.tasks.length };
+  }
+
+  function render(){
+    timelineEl.innerHTML = '';
+    currentSectionDay = null;
+
+    const visibleItems = items.filter(matchesFilter);
+    visibleItems.forEach(item => {
+      const label = sectionLabelFor(item.start);
+      if(label !== currentSectionDay){
+        currentSectionDay = label;
+        const h = document.createElement('div');
+        h.className = 'section-label';
+        h.textContent = label;
+        timelineEl.appendChild(h);
+      }
+
+      if(item.type === 'note'){
+        const row = document.createElement('div');
+        row.className = 'note-row';
+        row.dataset.id = item.id;
+        row.innerHTML =
+          '<div class="time">'+fmtTime(item.start)+'<br>'+fmtTime(item.end)+'</div>'+
+          '<div><div class="note-title">'+item.title+'</div><div class="note-text">'+item.note+'</div></div>';
+        timelineEl.appendChild(row);
+        return;
+      }
+
+      const { done, total } = taskCount(item);
+      const entry = document.createElement('div');
+      entry.className = 'entry' + (done===total ? ' done' : '');
+      entry.dataset.id = item.id;
+
+      const flagPill = item.flag ? '<span class="pill pill-flag">Weak spot</span>' : '';
+
+      entry.innerHTML =
+        '<div class="time">'+fmtTime(item.start)+'<br>'+fmtTime(item.end)+'</div>'+
+        '<div class="body">'+
+          '<div class="title-row"><span class="title">'+item.title+'</span>'+
+            '<span class="pill '+item.pill+'">'+item.pillLabel+'</span>'+flagPill+
+          '</div>'+
+        '</div>'+
+        '<div class="count">'+done+'/'+total+'<span class="chev">\u203a</span></div>'+
+        '<div class="tasks" id="tasks-'+item.id+'"><div class="tasks-inner"></div></div>';
+
+      const tasksInner = entry.querySelector('.tasks-inner');
+      item.tasks.forEach(t => {
+        const row = document.createElement('label');
+        row.className = 'task-row' + (t.checked ? ' checked' : '');
+        row.innerHTML = '<input type="checkbox" '+(t.checked?'checked':'')+'><span>'+t.label+'</span>';
+        const cb = row.querySelector('input');
+        cb.addEventListener('change', (e) => {
+          e.stopPropagation();
+          t.checked = cb.checked;
+          progress[t.id] = t.checked;
+          row.classList.toggle('checked', t.checked);
+          saveProgress();
+          updateCounts();
+        });
+        tasksInner.appendChild(row);
+      });
+
+      entry.addEventListener('click', (e) => {
+        if(e.target.tagName === 'INPUT') return;
+        selectedTimerItem = item;
+        timer.running = false;
+        timer.phase = 'focus';
+        timer.seconds = timerDurations.focus;
+        timer.cycle = 1;
+        updateTimerDisplay();
+        const tasksEl = entry.querySelector('.tasks');
+        const isOpen = entry.classList.toggle('open');
+        tasksEl.classList.toggle('open', isOpen);
+      });
+
+      if(allExpanded){
+        entry.classList.add('open');
+        entry.querySelector('.tasks').classList.add('open');
+      }
+
+      timelineEl.appendChild(entry);
+    });
+
+    if(!visibleItems.length){
+      const empty = document.createElement('div');
+      empty.className = 'empty-state';
+      empty.textContent = 'No matching schedule items.';
+      timelineEl.appendChild(empty);
+    }
+
+    updateCounts();
+  }
+
+  function updateCounts(){
+    let doneTotal = 0;
+    items.forEach(item => {
+      if(item.type !== 'study') return;
+      const { done, total } = taskCount(item);
+      doneTotal += done;
+      const entryEl = timelineEl.querySelector('.entry[data-id="'+item.id+'"]');
+      if(entryEl){
+        const countEl = entryEl.querySelector('.count');
+        countEl.innerHTML = done+'/'+total+'<span class="chev">\u203a</span>';
+        entryEl.classList.toggle('done', done===total && total>0);
+      }
+    });
+    document.getElementById('progress-text').textContent = doneTotal+' / '+TOTAL_TASKS+' tasks';
+    const pct = TOTAL_TASKS ? Math.round((doneTotal/TOTAL_TASKS)*100) : 0;
+    document.getElementById('progress-fill').style.width = pct+'%';
+  }
+
+  function activeStudyItem(){
+    const now = new Date();
+    return selectedTimerItem || items.find(item => item.type === 'study' && now >= item.start && now < item.end) || items.find(item => item.type === 'study');
+  }
+
+  function updateTimerDisplay(){
+    const item = activeStudyItem();
+    const clock = document.getElementById('timer-clock');
+    const fill = document.getElementById('timer-fill');
+    const mins = Math.floor(timer.seconds/60);
+    clock.textContent = String(mins).padStart(2,'0')+':'+String(timer.seconds%60).padStart(2,'0');
+    clock.classList.toggle('break', timer.phase === 'break');
+    fill.classList.toggle('break', timer.phase === 'break');
+    fill.style.width = (100 * (1 - timer.seconds/timerDurations[timer.phase]))+'%';
+    document.getElementById('timer-block').textContent = item ? item.title : 'No study block';
+    document.getElementById('timer-phase').textContent = timer.phase === 'focus' ? 'Focus session' : 'Short break';
+    document.getElementById('timer-cycle').textContent = 'Cycle '+timer.cycle;
+    document.getElementById('timer-start').textContent = timer.running ? 'Pause' : (timer.seconds === timerDurations[timer.phase] ? 'Start' : 'Resume');
+  }
+
+  function switchTimerPhase(){
+    timer.phase = timer.phase === 'focus' ? 'break' : 'focus';
+    if(timer.phase === 'focus') timer.cycle++;
+    timer.seconds = timerDurations[timer.phase];
+    if(!timer.auto) timer.running = false;
+    updateTimerDisplay();
+  }
+
+  function timerTick(){
+    if(!timer.running) return;
+    if(timer.seconds > 0) timer.seconds--;
+    if(timer.seconds === 0) switchTimerPhase();
+    updateTimerDisplay();
+  }
+
+  // ---------- Live countdown + "now" tracking ----------
+  function tickCountdown(){
+    const now = new Date();
+    const diff = EXAM - now;
+    const el = document.getElementById('countdown');
+    if(diff <= 0){
+      el.textContent = "It's exam time";
+      el.classList.add('urgent');
+    } else {
+      const totalSec = Math.floor(diff/1000);
+      const h = Math.floor(totalSec/3600);
+      const m = Math.floor((totalSec%3600)/60);
+      const s = totalSec%60;
+      el.textContent = h+'h '+String(m).padStart(2,'0')+'m '+String(s).padStart(2,'0')+'s';
+      el.classList.toggle('urgent', diff < 60*60*1000);
+    }
+  }
+
+  function updateNow(){
+    const now = new Date();
+    document.querySelectorAll('.active-now').forEach(el => el.classList.remove('active-now'));
+
+    let current = null;
+    for(const item of items){
+      if(now >= item.start && now < item.end){ current = item; break; }
+    }
+
+    const eyebrow = document.getElementById('now-eyebrow');
+    const titleEl = document.getElementById('now-title');
+    const metaEl = document.getElementById('now-meta');
+    const fillEl = document.getElementById('now-fill');
+
+    if(!current){
+      if(now < START){
+        eyebrow.textContent = 'Not started';
+        titleEl.textContent = 'Kicks off at ' + fmtTime(START);
+        metaEl.textContent = 'Ch. 20 is first up.';
+        fillEl.style.width = '0%';
+      } else {
+        eyebrow.textContent = 'Plan complete';
+        titleEl.textContent = 'You\u2019re at the exam.';
+        metaEl.textContent = 'Good luck.';
+        fillEl.style.width = '100%';
+      }
+      return;
+    }
+
+    const rowEl = timelineEl.querySelector('[data-id="'+current.id+'"]');
+    if(rowEl) rowEl.classList.add('active-now');
+
+    const remaining = current.end - now;
+    const elapsedPct = Math.min(100, Math.max(0, ((now-current.start)/(current.end-current.start))*100));
+    fillEl.style.width = elapsedPct+'%';
+
+    if(current.type === 'note'){
+      eyebrow.textContent = 'Right now';
+      titleEl.textContent = current.title;
+      metaEl.textContent = fmtDur(remaining) + ' left \u00b7 ' + current.note;
+    } else {
+      const { done, total } = taskCount(current);
+      eyebrow.textContent = 'Right now';
+      titleEl.textContent = current.title;
+      metaEl.textContent = fmtDur(remaining) + ' left in this block \u00b7 ' + done + '/' + total + ' reconciled';
+    }
+  }
+
+  document.getElementById('jump-btn').addEventListener('click', () => {
+    const active = timelineEl.querySelector('.active-now');
+    if(active){ active.scrollIntoView({ behavior:'smooth', block:'center' }); }
+  });
+
+  document.getElementById('reset-btn').addEventListener('click', async () => {
+    if(!confirm('Reset all checked tasks? This can\u2019t be undone.')) return;
+    progress = {};
+    items.forEach(it => it.tasks.forEach(t => t.checked = false));
+    try{
+      if(window.storage) await window.storage.delete('progress');
+      else window.localStorage.removeItem('exam-ledger-progress');
+    }catch(e){}
+    render();
+  });
+
+  document.getElementById('timer-start').addEventListener('click', () => {
+    timer.running = !timer.running;
+    updateTimerDisplay();
+  });
+  document.getElementById('timer-reset').addEventListener('click', () => {
+    timer.running = false;
+    timer.seconds = timerDurations[timer.phase];
+    updateTimerDisplay();
+  });
+  document.getElementById('timer-skip').addEventListener('click', switchTimerPhase);
+  document.getElementById('timer-auto').addEventListener('change', (e) => { timer.auto = e.target.checked; });
+
+  document.getElementById('search-box').addEventListener('input', (e) => {
+    searchQuery = e.target.value.trim().toLowerCase();
+    render();
+  });
+
+  document.querySelectorAll('[data-filter]').forEach(button => {
+    button.addEventListener('click', () => {
+      activeFilter = button.dataset.filter;
+      document.querySelectorAll('[data-filter]').forEach(btn => btn.classList.toggle('selected', btn === button));
+      render();
+    });
+  });
+
+  document.getElementById('expand-btn').addEventListener('click', () => {
+    allExpanded = !allExpanded;
+    document.getElementById('expand-btn').textContent = allExpanded ? 'Collapse all' : 'Expand all';
+    render();
+  });
+
+  // ---------- Init ----------
+  loadProgress().then(() => {
+    render();
+    tickCountdown();
+    updateNow();
+    updateTimerDisplay();
+    setInterval(tickCountdown, 1000);
+    setInterval(updateNow, 15000);
+    timer.interval = setInterval(timerTick, 1000);
+  });
+})();
+</script>
+</body>
+</html>
