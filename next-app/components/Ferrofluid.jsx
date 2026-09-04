@@ -294,8 +294,16 @@ const Ferrofluid = ({
         uniforms.iMouse.value = [x, y];
       }
     };
+    const onMessage = event => {
+      if (event.data?.type !== 'background-pointer') return;
+      onPointerMove({
+        clientX: event.data.x,
+        clientY: event.data.y
+      });
+    };
     if (mouseInteraction) {
       canvas.addEventListener('pointermove', onPointerMove);
+      window.addEventListener('message', onMessage);
     }
 
     const loop = t => {
@@ -327,7 +335,10 @@ const Ferrofluid = ({
 
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      if (mouseInteraction) canvas.removeEventListener('pointermove', onPointerMove);
+      if (mouseInteraction) {
+        canvas.removeEventListener('pointermove', onPointerMove);
+        window.removeEventListener('message', onMessage);
+      }
       ro.disconnect();
       if (canvas.parentElement === container) {
         container.removeChild(canvas);

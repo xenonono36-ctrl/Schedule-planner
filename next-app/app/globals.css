@@ -151,6 +151,18 @@
   pointer-events: none;
 }
 
+.ferro-background-lightfall {
+  opacity: 1;
+}
+
+.ferro-background-gridscan {
+  opacity: .94;
+}
+
+.ferro-background-ferrofluid {
+  opacity: .86;
+}
+
 .ferro-background::after {
   display: none;
 }
@@ -211,6 +223,10 @@
 
 .ferro-page[data-theme="ferrofluid"] .ledger-frame {
   opacity: .78;
+}
+
+.ferro-page[data-theme="lightfall"] .ledger-frame {
+  opacity: .76;
 }
 
 .ferro-kicker {
