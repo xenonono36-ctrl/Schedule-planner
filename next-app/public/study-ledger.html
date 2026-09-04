@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Exam Ledger — Accounting Cram Schedule</title>
+<title>Exam Ledger — Digital Logic Design Final Prep</title>
 <style>
   @font-face{
     font-family:'Departure Mono';
@@ -334,11 +334,11 @@
 <div class="wrap">
 
   <div class="ledger-head">
-    <p class="kicker">Accounting Principles, 12e — Weygandt · Chapters 5, 6, 20, 22</p>
-    <h1 class="exam-title">Exam Ledger</h1>
+    <p class="kicker">Digital Logic Design — Semester Final · Lectures 10–14</p>
+    <h1 class="exam-title">Final Prep Ledger</h1>
     <div class="countdown-row">
       <span class="countdown" id="countdown">—</span>
-      <span class="countdown-label">until exam · Fri 2:30 PM</span>
+      <span class="countdown-label">until exam · Mon 2:30 PM</span>
     </div>
     <div class="timer-panel" id="timer-panel">
       <div class="timer-top">
@@ -371,9 +371,9 @@
   </div>
 
   <div class="now-card" id="now-card">
-    <p class="eyebrow"><span class="dot"></span><span id="now-eyebrow">Loading…</span></p>
-    <p class="now-title" id="now-title">—</p>
-    <p class="now-meta" id="now-meta">—</p>
+    <p class="eyebrow"><span class="dot"></span><span id="now-eyebrow">Loading...</span></p>
+    <p class="now-title" id="now-title">-</p>
+    <p class="now-meta" id="now-meta">-</p>
     <div class="now-bar">
       <div class="progress-track"><div class="progress-fill" id="now-fill" style="background:var(--paper)"></div></div>
     </div>
@@ -392,98 +392,123 @@
   <div id="timeline"></div>
 
   <div class="memo">
-    <p><strong>Before you close the book tonight:</strong></p>
-    <p>Sleep 1:30–7:30 is not optional — memory consolidates while you're out, and cutting it costs you more than the extra hour of review would gain.</p>
-    <p>Eat protein at breakfast and lunch, not just carbs. A sugar crash at 1:45 PM is the last thing you want.</p>
-    <p>Tomorrow's drills are done from memory, unaided, before you check anything. That's what actually tells you what's solid.</p>
+    <p><strong>Carry into the exam room:</strong></p>
+    <p>Arrive early and read the whole paper before writing. Give yourself 5 to 10 minutes to understand every question.</p>
+    <p>Answer sub-parts in order where you can, and never leave a question blank. A reasonable attempt can still earn partial marks.</p>
+    <p>Watch the clock on low-mark, high-effort questions. If a question is taking too long for its value, move on and return later.</p>
   </div>
 
 </div>
 
 <script>
 (function(){
-  // ---------- Anchors ----------
-  const START = new Date(2026, 8, 3, 14, 0, 0);   // Thu Sep 3 2026, 2:00 PM
-  const EXAM  = new Date(2026, 8, 4, 14, 30, 0);  // Fri Sep 4 2026, 2:30 PM
-
-  // ---------- Schedule data ----------
-  // type: 'study' | 'note'   (note = break/meal/sleep/buffer, no checklist)
+  const START = new Date(2026, 8, 5, 8, 30, 0);
+  const EXAM = new Date(2026, 8, 7, 14, 30, 0);
   const raw = [
-    { id:'ch20', type:'study', mins:240, title:'Ch. 20 — Job Order Costing',
-      pill:'pill-ch20', pillLabel:'Ch. 20', flag:true,
-      tasks:[
-        'Do It! 1 — Ringling Co.','Do It! 2 — Danielle Co.','Do It! 3 — Stanley Co.',
-        'Do It! 4 — Onyx Corp.','Do It! 5 — Karr Co.','Practice Exercise 1','Practice Exercise 2',
-        'Practice Problem — Cardella Company','E20-3','E20-6','E20-8','E20-10','E20-13'
-      ]},
-    { id:'dinner', type:'note', mins:30, title:'Dinner', note:'Eat away from your notes. Real food, not just carbs.' },
-    { id:'ch22', type:'study', mins:210, title:'Ch. 22 — Cost-Volume-Profit',
-      pill:'pill-ch22', pillLabel:'Ch. 22', flag:true,
-      tasks:[
-        'Do It! 1','Do It! 2','Do It! 3','Do It! 4','Do It! 5','Do It! 6',
-        'Practice Exercise 1','Practice Exercise 2','Practice Problem — Mabo Company',
-        'E22-1','E22-2','E22-3','E22-8','E22-10','Problem 1A','Problem 2A','Problem 3A'
-      ]},
-    { id:'break1', type:'note', mins:15, title:'Break', note:'Stand up, stretch, look away from the screen.' },
-    { id:'ch5', type:'study', mins:120, title:'Ch. 5 — Merchandising Operations',
-      pill:'pill-ch5', pillLabel:'Ch. 5',
-      tasks:[
-        'Do It! 1','Do It! 2','Do It! 3','Do It! 4','Practice Exercise 1','Practice Exercise 2',
-        'Practice Problem — Falcetto Company','E5-1','E5-2','E5-4','E5-18','E5-19'
-      ]},
-    { id:'break2', type:'note', mins:15, title:'Break', note:'Quick reset before inventory.' },
-    { id:'ch6', type:'study', mins:60, title:'Ch. 6 — Inventories',
-      pill:'pill-ch6', pillLabel:'Ch. 6',
-      tasks:[
-        'Do It! 1','Do It! 2','Practice Exercise 1','Practice Exercise 2',
-        'Practice Problem 1','Practice Problem 2','E6-1','E6-2','E6-3','E6-4','E6-5','E6-17','E6-20',
-        'P6-1A','P6-2A','P6-3A','P6-4A','P6-6A'
-      ]},
-    { id:'sleep', type:'note', mins:360, title:'Sleep', note:'6 hours, non-negotiable. This is when today\u2019s material actually consolidates.' },
-    { id:'wake', type:'note', mins:30, title:'Wake + breakfast', note:'Don\u2019t touch notes yet. Let your brain finish waking up.' },
-    { id:'drill1', type:'study', mins:90, title:'Blind redo — Cardella & Mabo',
-      pill:'pill-review', pillLabel:'Ch. 20 · Ch. 22',
-      tasks:[
-        'Redo Cardella Company (Ch. 20) unaided',
-        'Redo Mabo Company (Ch. 22) unaided',
-        'Log every mistake for the reconcile block'
-      ]},
-    { id:'break3', type:'note', mins:15, title:'Break', note:'Short walk if you can.' },
-    { id:'drill2', type:'study', mins:90, title:'Blind redo — Falcetto & Ch. 6 problems',
-      pill:'pill-review', pillLabel:'Ch. 5 · Ch. 6',
-      tasks:[
-        'Redo Falcetto Company (Ch. 5) unaided',
-        'Redo Ch. 6 Practice Problem 1 unaided',
-        'Redo Ch. 6 Practice Problem 2 unaided'
-      ]},
-    { id:'break4', type:'note', mins:15, title:'Break', note:'Almost there.' },
-    { id:'fix', type:'study', mins:60, title:'Reconcile mistakes',
-      pill:'pill-review', pillLabel:'All chapters',
-      tasks:[
-        'Rework every missed step from the Cardella/Mabo redo',
-        'Rework every missed step from the Falcetto/Ch.6 redo',
-        'Redrill any exercise you got wrong today'
-      ]},
-    { id:'lunch', type:'note', mins:30, title:'Lunch', note:'Protein, not sugar. You need steady energy, not a 2 PM crash.' },
-    { id:'final', type:'study', mins:60, title:'Final pass — all four chapters',
-      pill:'pill-review', pillLabel:'Ch. 5 · 6 · 20 · 22',
-      tasks:[
-        'Skim Ch. 5 Do It boxes',
-        'Skim Ch. 6 Do It boxes',
-        'Skim Ch. 20 Do It boxes',
-        'Skim Ch. 22 Do It boxes',
-        'Review formulas: FIFO/LIFO/avg cost \u00b7 POHR & applied OH \u00b7 CM, CM ratio & break-even'
-      ]},
-    { id:'buffer', type:'note', mins:30, title:'Buffer / travel', note:'No new material. Get to the exam room and breathe.' },
-  ];
-
+      { id:'warmup', type:'study', mins:150, title:'Lecture 10 (Part 1) — Combinational Logic II (4.0h topic map)', pill:'pill-lecture', pillLabel:'Lecture 10', flag:true,
+        tasks:['0.5h — BCD adder: derive +6 correction logic and carry output conditions','0.5h — Binary multiplier: partial products and 2-bit multiplier implementation','0.5h — Binary magnitude comparator: 1-bit and 4-bit A > B, A = B, A < B','1.25h — Encoders and decoders: 3x8, enable pins, 4x16 cascade, and priority encoders','1.25h — Multiplexers and demultiplexers: 4-to-1 MUX, decoder-based MUX, and DEMUX'] },
+      { id:'winddown', type:'note', mins:30, title:'Wind down', note:'Put the notes away. Sleep will help more than another half hour of cramming.' },
+      { id:'sleep-fri', type:'note', mins:420, title:'Sleep', note:'7 hours.' },
+      { id:'wake-sat', type:'note', mins:30, title:'Wake & breakfast', note:'Start the day fed and hydrated.' },
+      { id:'lec10', type:'study', mins:210, title:'Lecture 10 — Combinational Logic II (3.5h)', pill:'pill-lecture', pillLabel:'Lecture 10', flag:true,
+        tasks:[
+          '1.0h — Binary multiplier: generate partial products and build the 2-bit multiplier',
+          '1.0h — Binary magnitude comparator: design 1-bit and 4-bit A > B, A = B, A < B outputs',
+          '1.5h — Encoders and decoders: 3x8 decoder, enable pins, 4x16 cascading, and combinational logic'
+        ] },
+      { id:'lec10-part2', type:'study', mins:120, title:'Lecture 10 (Part 2) — Applied Decoder and MUX Problems', pill:'pill-lecture', pillLabel:'Lecture 10',
+        tasks:['Apply 3x8 decoder enable logic and 4x16 cascading','Implement combinational expressions with decoders and priority encoders','Build 4-to-1 and 2^n-to-1 MUXes using decoder logic','Trace demultiplexer outputs and enable behavior'] },
+      { id:'break-sat-1', type:'note', mins:15, title:'Break', note:'Stand up, drink water, and let the examples settle.' },
+      { id:'lec11-devices', type:'study', mins:150, title:'Lecture 11 — Programmable Logic Devices (4.0h topic map)', pill:'pill-lecture', pillLabel:'Lecture 11', flag:true,
+        tasks:[
+          '0.25h — PLD fundamentals: structural organization, classifications, and advantages','0.75h — ROM: 2^n x m structure, decoder implementation, and ROM types','1.0h — PLA: n x p x m architecture, SOP reduction, and program tables','1.0h — PAL: programmable AND/fixed OR architecture and PLA comparison','0.25h — Advanced PLDs: registered PALs, GALs, and FPGAs','0.75h — ALU: role, 1-bit design, and multi-bit expansion'
+        ] },
+      { id:'meeting', type:'note', mins:180, title:'Meeting', note:'Busy — no study planned here.' },
+      { id:'lunch-sat', type:'note', mins:30, title:'Lunch', note:'Take a real break before the afternoon sessions.' },
+      { id:'lec11-pld', type:'study', mins:135, title:'Lecture 11 — PLA, PAL, advanced PLDs, and ALU (3.5h)', pill:'pill-lecture', pillLabel:'Lecture 11 · PLD',
+        tasks:[
+          '1.0h — PLA: n x p x m architecture, SOP reduction, and program table',
+          '1.0h — PAL: programmable AND/fixed OR architecture and PLA comparison',
+          '0.5h — Advanced PLDs: registered PAL, GAL, and FPGA overview',
+          '1.0h — ALU: role, 1-bit design, and multi-bit ALU expansion'
+        ] },
+      { id:'break-sat-2', type:'note', mins:20, title:'Break', note:'Reset before the most concept-heavy session.' },
+      { id:'lec12', type:'study', mins:180, title:'Lecture 12 (Part 1) — Sequential Circuits and Flip-Flops (5.0h topic map)', pill:'pill-lecture', pillLabel:'Lecture 12', flag:true,
+        tasks:[
+          '0.25h — Sequential circuits and classification: memory states, feedback, synchronous/asynchronous timing','0.5h — Latches versus flip-flops: level-triggered versus edge-triggered','1.5h — SR, D, JK, and T schematics, truth tables, and characteristics','0.25h — Asynchronous Preset (Pr) and Clear (Cr) lines','0.75h — Race-around condition, Master-Slave JK, and edge-triggering solutions','0.5h — Excitation tables and state transitions','1.25h — Step-by-step flip-flop conversion algorithms'
+        ] },
+      { id:'dinner-sat', type:'note', mins:45, title:'Dinner', note:'Eat away from your notes.' },
+      { id:'break-sat-3', type:'note', mins:20, title:'Break', note:'Return fresh for registers.' },
+      { id:'lec13', type:'study', mins:120, title:'Lecture 13 — Registers (4.5h topic map)', pill:'pill-lecture', pillLabel:'Lecture 13',
+        tasks:[
+          '0.5h — Register fundamentals: construct multi-bit storage registers with flip-flops','0.5h — Shift register classification: directions, serial/parallel modes, and capabilities','1.5h — SISO, SIPO, PISO, and PIPO operation and timing','0.5h — IC 74L91 SISO and IC 74164 SIPO logic operations','1.5h — Bidirectional and 4-bit universal shift registers with control logic'
+        ] },
+      { id:'break-sat-4', type:'note', mins:20, title:'Break', note:'Reset before the final topic.' },
+      { id:'lec14', type:'study', mins:150, title:'Lecture 14 (Part 1) — Counters (5.0h topic map)', pill:'pill-lecture', pillLabel:'Lecture 14',
+        tasks:[
+          '0.5h — Counter fundamentals and classifications: pulse counting, modes, and modulus','1.25h — Asynchronous ripple counters: 3-bit up/down designs and propagation delays','1.25h — Synchronous counters: parallel-carry versus ripple-carry up/down','1.5h — Synchronous design method: state diagrams, excitation tables, K-maps, and MOD-N synthesis','0.5h — Shift register counters: Ring and Johnson state sequences'
+        ] },
+      { id:'lec14-part2', type:'study', mins:120, title:'Lecture 14 (Part 2) — MOD-N, Ring, and Johnson Counters', pill:'pill-lecture', pillLabel:'Lecture 14',
+        tasks:[
+          'MOD-N synchronous design: state diagram to state/excitation table','K-map simplification and circuit synthesis, including MOD-3','Ring and Johnson counter feedback configurations and state sequences'
+        ] },
+      { id:'reference-sat', type:'study', mins:20, title:'Build a reference sheet', pill:'pill-review', pillLabel:'All lectures',
+        tasks:['Write key steps from each lecture','Record one confusing point from each lecture','Keep the sheet short for Sunday practice'] },
+      { id:'sleep-sat', type:'note', mins:420, title:'Sleep', note:'7 hours.' },
+      { id:'wake-sun', type:'note', mins:60, title:'Wake, breakfast, skim yesterday’s sheet', note:'Ease into the practice day.' },
+      { id:'practice-10-11', type:'study', mins:120, title:'Guided practice: Lectures 10–11', pill:'pill-practice', pillLabel:'Lectures 10–11',
+        tasks:['Practice BCD adders','Practice multipliers and comparators','Practice MUX/DEMUX and decoders/encoders','Practice one PLD problem'] },
+      { id:'break-sun-1', type:'note', mins:15, title:'Break', note:'Short reset.' },
+      { id:'practice-12', type:'study', mins:90, title:'Lecture 12 (Part 2) — Excitation Tables and Flip-Flop Conversion', pill:'pill-lecture', pillLabel:'Lecture 12', flag:true,
+        tasks:['Derive SR, D, JK, and T state-transition excitation tables','Apply the step-by-step conversion algorithm between flip-flop types','Solve conversion problems using K-maps'] },
+      { id:'break-sun-2', type:'note', mins:15, title:'Break', note:'Stretch and hydrate.' },
+      { id:'practice-13-14', type:'study', mins:90, title:'Guided practice: Lectures 13–14', pill:'pill-practice', pillLabel:'Lectures 13–14',
+        tasks:['Draw and read register timing diagrams','Compare counter types','Complete one Proteus or worksheet exercise'] },
+      { id:'lunch-sun', type:'note', mins:60, title:'Lunch', note:'Step away from the desk.' },
+      { id:'mock', type:'study', mins:150, title:'Full mock exam', pill:'pill-mock', pillLabel:'Timed practice', flag:true,
+        tasks:['Read the whole paper first','Work in 30-minute sets','Attempt every question before checking answers'] },
+      { id:'break-sun-3', type:'note', mins:30, title:'Break', note:'Clear your head before reviewing.' },
+      { id:'mock-review', type:'study', mins:120, title:'Review the mock', pill:'pill-review', pillLabel:'Error correction',
+        tasks:['Review every mistake','Fix the underlying step, not just the final answer','Write down patterns in your errors'] },
+      { id:'dinner-sun', type:'note', mins:45, title:'Dinner', note:'Take a proper evening break.' },
+      { id:'practice-evening-10', type:'study', mins:180, title:'Practice Block 1 — MUX Logic, PLA Tables, Flip-Flop Conversions (3.0h)', pill:'pill-practice', pillLabel:'Practice 1', flag:true,
+        tasks:['Solve MUX logic implementation problems','Construct PLA program tables from simplified SOP expressions','Complete flip-flop conversion problems using K-maps','Work past-exam questions without checking solutions first'] },
+      { id:'practice-evening-12', type:'study', mins:150, title:'Practice Block 2 — Counter Design and Register Timing (2.5h)', pill:'pill-practice', pillLabel:'Practice 2', flag:true,
+        tasks:['Design synchronous counters step by step','Practice state diagrams, excitation tables, and K-maps','Draw shift-register timing diagrams','Solve past-exam problems without looking at solutions'] },
+      { id:'reference-sun', type:'study', mins:30, title:'Finalize your reference sheet', pill:'pill-review', pillLabel:'All lectures', tasks:['Compress two days of notes into one page'] },
+      { id:'winddown-sun', type:'note', mins:60, title:'Wind down', note:'Disconnect from the material completely before bed.' },
+      { id:'sleep-sun', type:'note', mins:420, title:'Sleep', note:'7 hours.' },
+      { id:'wake-mon', type:'note', mins:60, title:'Wake, light breakfast', note:'Keep the morning calm.' },
+      { id:'final-review', type:'study', mins:90, title:'Final High-Yield Review (1.5h)', pill:'pill-final', pillLabel:'Final review', flag:true,
+        tasks:['Scan the formula and reference sheet','Quickly re-check state tables and excitation tables','Re-check the highest-yield concepts without learning new material'] },
+      { id:'break-mon-1', type:'note', mins:15, title:'Break', note:'Do not add new material.' },
+      { id:'quick-fire', type:'study', mins:75, title:'Quick-fire practice', pill:'pill-final', pillLabel:'Final practice', tasks:['Do two or three problems per topic','Use the reference sheet only after attempting each problem'] },
+      { id:'walk', type:'note', mins:30, title:'Light walk', note:'Hydrate, get some air, and let your brain settle.' },
+      { id:'lunch-mon', type:'note', mins:60, title:'Lunch', note:'Something light so you stay alert at 2:30.' },
+      { id:'final-skim', type:'study', mins:60, title:'Final skim', pill:'pill-final', pillLabel:'One-page sheet', tasks:['Skim the reference sheet','Do not cram new topics'] },
+      { id:'pack', type:'note', mins:30, title:'Pack your bag', note:'Pens, ID, and calculator if allowed.' },
+      { id:'travel', type:'note', mins:30, title:'Travel', note:'Leave early so you arrive with time to spare.' },
+      { id:'arrive', type:'note', mins:25, title:'Arrive & settle', note:'Sit down, breathe, and run through flip-flop conversion steps once.' },
+      { id:'read-paper', type:'note', mins:5, title:'Read the paper', note:'Read the entire question paper before writing anything.' },
+      { id:'exam', type:'study', mins:1, title:'Exam begins', pill:'pill-exam', pillLabel:'2:30 PM', tasks:['Digital Logic Design — Semester Final'] },
+    ];
   // ---------- Build absolute start/end + ids ----------
-  let cursor = new Date(START);
-  const scheduleOrder = ['ch5','break2','ch6','dinner','ch20','break1','ch22','sleep','wake','drill1','break3','drill2','break4','fix','lunch','final','buffer'];
+  const scheduleTimes = {
+    warmup:['2026-09-05T08:30','2026-09-05T10:30'], meeting:['2026-09-05T11:00','2026-09-05T14:00'], 'lunch-sat':['2026-09-05T14:00','2026-09-05T14:30'],
+    'lec10-part2':['2026-09-05T14:30','2026-09-05T16:30'], 'break-sat-2':['2026-09-05T16:30','2026-09-05T17:00'], 'lec11-devices':['2026-09-05T17:00','2026-09-05T21:00'], 'dinner-sat':['2026-09-05T21:00','2026-09-05T21:30'],
+    lec12:['2026-09-05T21:30','2026-09-06T00:30'], 'sleep-sat':['2026-09-06T00:30','2026-09-06T07:30'],
+    'practice-12':['2026-09-06T08:30','2026-09-06T10:30'], lec13:['2026-09-06T10:30','2026-09-06T15:00'], 'lunch-sun':['2026-09-06T15:00','2026-09-06T15:30'],
+    lec14:['2026-09-06T15:30','2026-09-06T18:00'], 'break-sun-3':['2026-09-06T18:00','2026-09-06T18:30'], 'lec14-part2':['2026-09-06T18:30','2026-09-06T21:00'], 'dinner-sun':['2026-09-06T21:00','2026-09-06T21:30'],
+    'practice-evening-10':['2026-09-06T21:30','2026-09-07T00:30'], 'sleep-sun':['2026-09-07T00:30','2026-09-07T08:30'],
+    'practice-evening-12':['2026-09-07T08:30','2026-09-07T11:00'], 'break-sat-3':['2026-09-07T11:00','2026-09-07T11:30'], 'final-review':['2026-09-07T11:30','2026-09-07T13:00'],
+    pack:['2026-09-07T13:00','2026-09-07T13:30'], travel:['2026-09-07T13:30','2026-09-07T14:00'], arrive:['2026-09-07T14:00','2026-09-07T14:25'],
+    'read-paper':['2026-09-07T14:25','2026-09-07T14:30'], exam:['2026-09-07T14:30','2026-09-07T14:31']
+  };
+  const scheduleOrder = ['warmup','meeting','lunch-sat','lec10-part2','break-sat-2','lec11-devices','dinner-sat','lec12','sleep-sat','practice-12','lec13','lunch-sun','lec14','break-sun-3','lec14-part2','dinner-sun','practice-evening-10','sleep-sun','practice-evening-12','break-sat-3','final-review','pack','travel','arrive','read-paper','exam'];
   const items = scheduleOrder.map(id => raw.find(b => b.id === id)).map(b => {
-    const start = new Date(cursor);
-    const end = new Date(cursor.getTime() + b.mins*60000);
-    cursor = end;
+    const [startTime, endTime] = scheduleTimes[b.id];
+    const start = new Date(startTime);
+    const end = new Date(endTime);
     const tasks = (b.tasks||[]).map((label, i) => ({ id: b.id+'-'+i, label, checked:false }));
     return Object.assign({}, b, { start, end, tasks });
   });
@@ -546,7 +571,12 @@
   }
 
   function sectionLabelFor(d){
-    return d.getDate() === START.getDate() ? 'Today' : 'Tomorrow';
+    const dayStart = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    const startDay = new Date(START.getFullYear(), START.getMonth(), START.getDate());
+    const dayOffset = Math.round((dayStart - startDay) / 86400000);
+    if(dayOffset === 0) return 'Today';
+    if(dayOffset === 1) return 'Tomorrow';
+    return dayStart.toLocaleDateString('en-US', { weekday:'long', month:'short', day:'numeric' });
   }
 
   function taskCount(item){
@@ -734,7 +764,7 @@
       if(now < START){
         eyebrow.textContent = 'Not started';
         titleEl.textContent = 'Kicks off at ' + fmtTime(START);
-        metaEl.textContent = 'Ch. 20 is first up.';
+        metaEl.textContent = 'Warm-up review is first up.';
         fillEl.style.width = '0%';
       } else {
         eyebrow.textContent = 'Plan complete';
