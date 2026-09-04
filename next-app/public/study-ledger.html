@@ -647,10 +647,6 @@
       entry.addEventListener('click', (e) => {
         if(e.target.tagName === 'INPUT') return;
         selectedTimerItem = item;
-        timer.running = false;
-        timer.phase = 'focus';
-        timer.seconds = timerDurations.focus;
-        timer.cycle = 1;
         updateTimerDisplay();
         const tasksEl = entry.querySelector('.tasks');
         const isOpen = entry.classList.toggle('open');
