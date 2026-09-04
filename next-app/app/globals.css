@@ -146,15 +146,45 @@
 .ferro-background {
   position: fixed;
   inset: 0;
+  z-index: 0;
   opacity: .86;
+  pointer-events: none;
 }
 
 .ferro-background::after {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, rgba(13, 17, 20, .86), rgba(13, 17, 20, .25) 60%, rgba(13, 17, 20, .56));
-  content: "";
-  pointer-events: none;
+  display: none;
+}
+
+.theme-switcher {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 3;
+  display: flex;
+  gap: .35rem;
+  padding: .3rem;
+  border: 1px solid rgba(237, 232, 220, .18);
+  border-radius: .45rem;
+  background: rgba(13, 17, 20, .82);
+  box-shadow: 0 .5rem 1.5rem rgba(0, 0, 0, .2);
+  backdrop-filter: blur(10px);
+}
+
+.theme-switcher button {
+  border: 1px solid transparent;
+  border-radius: .25rem;
+  padding: .45rem .6rem;
+  color: rgba(237, 232, 220, .65);
+  background: transparent;
+  font: 600 .65rem/1 var(--font-mono), monospace;
+  cursor: pointer;
+}
+
+.theme-switcher button:hover,
+.theme-switcher button.active {
+  border-color: rgba(201, 146, 42, .55);
+  color: #ede8dc;
+  background: rgba(201, 146, 42, .16);
 }
 
 .ferro-content {
@@ -176,6 +206,11 @@
   min-height: 100svh;
   border: 0;
   background: transparent;
+  opacity: .9;
+}
+
+.ferro-page[data-theme="ferrofluid"] .ledger-frame {
+  opacity: .78;
 }
 
 .ferro-kicker {
