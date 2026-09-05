@@ -690,6 +690,10 @@ export const GridScan = ({
 
   useEffect(() => {
     let canceled = false;
+    if (!enableWebcam) {
+      return undefined;
+    }
+
     const load = async () => {
       try {
         await Promise.all([
@@ -705,7 +709,7 @@ export const GridScan = ({
     return () => {
       canceled = true;
     };
-  }, [modelsPath]);
+  }, [enableWebcam, modelsPath]);
 
   useEffect(() => {
     let stop = false;

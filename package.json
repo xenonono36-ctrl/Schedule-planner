@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "dev": "npm --prefix next-app run dev"
+  },
   "dependencies": {
     "face-api.js": "^0.22.2",
     "ogl": "^1.0.11",

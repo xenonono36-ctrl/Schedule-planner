@@ -4,12 +4,9 @@ import { useEffect, useRef, useState } from "react"
 
 import Ferrofluid from "@/components/Ferrofluid"
 import { GridScan } from "@/components/GridScan"
-import Lightfall from "@/components/Lightfall"
 
 export default function Page() {
-  const [theme, setTheme] = useState<
-    "lightfall" | "ferrofluid" | "gridscan"
-  >("lightfall")
+  const [theme, setTheme] = useState<"ferrofluid" | "gridscan">("ferrofluid")
   const ledgerFrameRef = useRef<HTMLIFrameElement>(null)
 
   useEffect(() => {
@@ -26,26 +23,7 @@ export default function Page() {
         className={`ferro-background ferro-background-${theme}`}
         aria-hidden="true"
       >
-        {theme === "lightfall" ? (
-          <Lightfall
-            colors={["#A6C8FF", "#5227FF", "#FF9FFC"]}
-            backgroundColor="#0A29FF"
-            speed={0.5}
-            streakCount={2}
-            streakWidth={1}
-            streakLength={1}
-            glow={1}
-            density={0.6}
-            twinkle={1}
-            zoom={3}
-            backgroundGlow={0.5}
-            opacity={1}
-            mouseInteraction
-            mouseStrength={0.5}
-            mouseRadius={1}
-            mouseDampening={0.15}
-          />
-        ) : theme === "ferrofluid" ? (
+        {theme === "ferrofluid" ? (
           <Ferrofluid
             colors={["#f4eee2", "#c9922a", "#5b8a87", "#c1554d"]}
             speed={0.28}
@@ -75,7 +53,7 @@ export default function Page() {
             bloomThreshold={0.05}
             bloomSmoothing={0.35}
             noiseIntensity={0.004}
-            enablePost
+            enablePost={false}
             enableWebcam={false}
             enableGyro={false}
             scanOnClick={false}
@@ -83,14 +61,6 @@ export default function Page() {
         )}
       </div>
       <div className="theme-switcher" role="group" aria-label="Background theme">
-        <button
-          type="button"
-          className={theme === "lightfall" ? "active" : ""}
-          aria-pressed={theme === "lightfall"}
-          onClick={() => setTheme("lightfall")}
-        >
-          Lightfall
-        </button>
         <button
           type="button"
           className={theme === "ferrofluid" ? "active" : ""}
